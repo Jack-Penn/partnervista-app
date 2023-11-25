@@ -48,59 +48,63 @@ export const addNewPartner = async (partner: NewPartner): Promise<number> => {
   }
 };
 
-export const getPartners = async (limit: number, offset: number = 0): Promise<Partner[]> => {
-  const sql = `
-    SELECT *
-    FROM partners
-    ORDER BY partner_id DESC
-    LIMIT ? OFFSET ?
-  `;
+interface queryPartnersOptions {
+  searchQuery?: string;
+  typeId?: string;
+  limit: number;
+  offset: number;
+}
 
-  try {
-    const results: Partner[] = await query(sql, [limit, offset]);
-    const partners = await Promise.all(
-      results.map(async (partner: Partner) => {
-        partner.types = await getPartnerTypes(partner);
-        return parseDataAsPartner(partner);
-      })
-    );
-    return partners;
-  } catch (error) {
-    console.error("Error retrieving partners:", error);
-    throw error;
-  }
-};
+export const queryPartners = async (options: queryPartnersOptions): Promise<Partner[]> => {
+  options = Object.assign(
+    {
+      limit: 10,
+      offset: 0,
+    },
+    options
+  );
 
-export const searchPartners = async (searchQuery: string, limit: number, offset: number = 0): Promise<Partner[]> => {
-  const sql = `
-    SELECT *,
-        MATCH(name) AGAINST (?) AS relevance
-    FROM partners
-    WHERE 
-        (
-            -- Partial Match (case-insensitive)
-            LOWER(name) LIKE LOWER(?)
-            OR
+  let sql = `SELECT partners.* FROM partners\n`;
 
-            -- Full-Text Search with Score (case-insensitive)
-            MATCH(name) AGAINST (? IN BOOLEAN MODE)
-        )
+  const conditions: string[] = [];
+  const params = [];
+
+  if (options.searchQuery) {
+    // sql += `\n     MATCH(partners.name) AGAINST (?) AS relevance`;
+    conditions.push(`
+      (
+        -- Partial Match (case-insensitive)
+        LOWER(partners.name) LIKE LOWER(?) 
         OR
-
+        -- Full-Text Search with Score (case-insensitive)
+        MATCH(partners.name) AGAINST (? IN BOOLEAN MODE)  
+        OR
         -- Soundex Comparison (case-insensitive)
-        SOUNDEX(LOWER(name)) = SOUNDEX(LOWER(?))
-    ORDER BY relevance DESC
-    LIMIT ? OFFSET ?
-  `;
+        SOUNDEX(LOWER(partners.name)) = SOUNDEX(LOWER(?))
+      )`);
+    params.push(`%${options.searchQuery}%`, options.searchQuery, options.searchQuery);
+  }
+
+  if (options.typeId) {
+    sql += `
+      JOIN partner_types pt ON partners.partner_id = pt.partner_id
+      JOIN types c ON pt.type_id = c.type_id
+    `;
+    conditions.push(`pt.type_id = ?`);
+    params.push(options.typeId);
+  }
+
+  if (conditions.length) {
+    sql += `WHERE (${conditions.join(" AND ")})`;
+  }
+
+  sql += `
+  ORDER BY partner_id DESC 
+  LIMIT ? OFFSET ?`;
+  params.push(options.limit, options.offset);
+
   try {
-    const results: Partner[] = await query(sql, [
-      `%${searchQuery}%`,
-      `%${searchQuery}%`,
-      searchQuery,
-      searchQuery,
-      limit,
-      offset,
-    ]);
+    const results: Partner[] = await query(sql, params);
     const partners = await Promise.all(
       results.map(async (partner: Partner) => {
         partner.types = await getPartnerTypes(partner);
@@ -113,14 +117,6 @@ export const searchPartners = async (searchQuery: string, limit: number, offset:
     throw error;
   }
 };
-
-interface queryPartnersOptions {
-  searchQuery?: string;
-  typeId?: string;
-  limit: number;
-  offset: number;
-}
-
 
 async function getPartnerTypes(partner: Partner): Promise<Type[]> {
   const sql = `
