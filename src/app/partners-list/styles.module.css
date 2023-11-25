@@ -1,0 +1,84 @@
+/* styles.module.css (or your preferred naming convention) */
+
+.partner-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.partner-card h2 {
+  color: #333;
+}
+
+.partner-card p {
+  margin: 8px 0;
+}
+
+.partner-card strong {
+  font-weight: bold;
+}
+
+/* Additional styling, adjust as needed */
+.partner-card:hover {
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.search-container {
+  position: relative;
+  max-width: 400px;
+  width: 100%;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #555;
+}
+
+.types-container {
+  display: flex;
+  flex-wrap: wrap;
+  /* gap: 10px; Adjust the gap as needed */
+}
+
+.type-chip {
+  color: #ffffff; /* Set your desired text color */
+  font-size: small;
+  padding: 4px 8px; /* Increase padding for a more button-like feel */
+  border: none;
+  border-radius: 20px; /* Make the chips rounded */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for depth */
+  margin-right: 4px; /* Adjust the margin as needed */
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s; /* Add transition for smooth effects */
+  /* background: linear-gradient(180deg, #4caf50 0%, #2e7d32 100%); Add gradient background */
+}
+
+/* Hover effect for the chips */
+.type-chip:hover {
+  transform: translateY(-2px); /* Move the chip up slightly on hover */
+}
+
+/* Active (clicked) effect for the chips */
+.type-chip:active {
+  transform: translateY(2px); /* Move the chip down slightly when clicked */
+}
