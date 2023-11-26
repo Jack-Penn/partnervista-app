@@ -14,7 +14,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ setSearchParams }) => {
 
   useEffect(() => {
     if (!initialLoad.current) {
-      console.log("use effect");
       handleSearch();
     }
   }, [searchQuery]);

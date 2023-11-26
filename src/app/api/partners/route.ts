@@ -5,7 +5,6 @@ export async function GET(req: NextRequest) {
   const limit = req.nextUrl.searchParams.get("limit") || 10;
   const offset = req.nextUrl.searchParams.get("offset") || 0;
   const searchQuery = req.nextUrl.searchParams.get("search") || undefined;
-  console.log(searchQuery);
   // const types = req.nextUrl.searchParams.get("types")?.split(",") || [];
   const typeId = req.nextUrl.searchParams.get("type") || undefined;
   try {
