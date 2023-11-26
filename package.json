@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-google-maps/api": "^2.19.2",
     "mysql": "^2.18.1",
     "next": "14.0.3",
     "react": "^18",
