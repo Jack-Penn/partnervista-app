@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Partner, Type, parseDataAsPartner } from "@/types";
-import styles from "./styles.module.css";
+import styles from "./styles.module.scss";
 import { ContactCard } from "./ContactCard";
 import SearchBar from "./SearchBar";
 import TypeChip from "./TypeChip";
@@ -68,8 +68,7 @@ const Page: React.FC = () => {
 
   return (
     <>
-      <h1>Partners List</h1>
-      <div className={styles["query-container"]}>
+      <div className={`${styles["query-container"]} m-2.5`}>
         <SearchBar setSearchParams={setSearchParams} />
         <TypeSelector setSearchParams={setSearchParams} />
       </div>

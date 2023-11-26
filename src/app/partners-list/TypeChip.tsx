@@ -1,5 +1,5 @@
 import { Type } from "@/types";
-import styles from "./styles.module.css";
+import styles from "./styles.module.scss";
 
 interface TypeChipProps {
   type: Type;
@@ -27,7 +27,7 @@ const TypeChip: React.FC<TypeChipProps> = ({ type }) => {
 
   return (
     <div
-      className={styles["type-chip"]}
+      className={`${styles["type-chip"]} select-none`}
       style={{ background: `linear-gradient(180deg, ${type.color} 0%, ${darkenColor(type.color, 0.2)} 100%)` }}
     >
       {type.name}

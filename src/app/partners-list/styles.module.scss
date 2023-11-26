@@ -56,12 +56,11 @@
   position: absolute;
   right: 10px;
   top: 50%;
-  transform: translateY(-100%);
+  transform: translateY(-50%);
   color: #555;
 }
 
 .type-selector-container {
-  margin-bottom: 20px;
   display: flex;
 }
 
@@ -82,7 +81,6 @@
   border: none;
   border-radius: 20px; /* Make the chips rounded */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for depth */
-  margin-right: 10px; /* Adjust the margin as needed */
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s; /* Add transition for smooth effects */
   /* background: linear-gradient(180deg, #4caf50 0%, #2e7d32 100%); Add gradient background */

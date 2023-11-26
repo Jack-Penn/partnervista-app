@@ -1,7 +1,7 @@
 "use client";
 
 import { Dispatch, SetStateAction, useState, useEffect, useRef } from "react";
-import styles from "./styles.module.css";
+import styles from "./styles.module.scss";
 
 interface SearchBarProps {
   setSearchParams: Dispatch<SetStateAction<{}>>;
@@ -51,7 +51,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ setSearchParams }) => {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
-      <i className={styles["search-icon"]}>🔍</i>
+      <i className={`${styles["search-icon"]} text-lg`}>🔍</i>
     </div>
   );
 };
