@@ -20,10 +20,8 @@ export const ContactCard: React.FC<ContactCardProps> = ({ partner }) => {
   window.URL.revokeObjectURL(url);
 
   return (
-    <p style={{ cursor: "pointer" }}>
-      <a href={url} download={`${partner.name}_contact.vcf`}>
-        Download Contact Card
-      </a>
-    </p>
+    <a className="link" href={url} download={`${partner.name}_contact.vcf`}>
+      Download Contact Card
+    </a>
   );
 };

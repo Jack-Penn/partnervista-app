@@ -2,6 +2,7 @@ export interface Partner {
   partner_id: number;
   name: string;
   description: string;
+  website: string;
   types: Type[];
   resources: string;
   contact_name: string;

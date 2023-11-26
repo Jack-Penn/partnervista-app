@@ -7,6 +7,7 @@ import { ContactCard } from "./ContactCard";
 import SearchBar from "./SearchBar";
 import TypeChip from "./TypeChip";
 import TypeSelector from "./TypeSelector";
+import Image from "next/image";
 
 interface SearchParams {
   limit: number;
@@ -100,8 +101,15 @@ const PartnerCard: React.FC<PartnerCardProps> = ({ partner }) => {
 
   return (
     <div className={styles["partner-card"]}>
-      <h2>{partner.name}</h2>
-      <div className={styles["types-container"]}>
+      <div className="flex items-center	mb-2 gap-3">
+        <h2 className="text-2xl font-bold">{partner.name}</h2>
+        {
+          <a href={partner.website} target="_blank" rel="noopener noreferrer">
+            <Image className="cursor-alias" src="/website-icon.svg" alt="Website Icon" width={25} height={25} />
+          </a>
+        }
+      </div>
+      <div className={`${styles["types-container"]} gap-2`}>
         {partner.types.map((type: Type) => (
           <TypeChip key={type.type_id} type={type} />
         ))}
@@ -116,10 +124,16 @@ const PartnerCard: React.FC<PartnerCardProps> = ({ partner }) => {
         <strong>Contact Name:</strong> {partner.contact_name}
       </p>
       <p>
-        <strong>Contact Email:</strong> <a href={"mailto:" + partner.contact_email}>{partner.contact_email}</a>
+        <strong>Contact Email:</strong>{" "}
+        <a className="link" href={"mailto:" + partner.contact_email}>
+          {partner.contact_email}
+        </a>
       </p>
       <p>
-        <strong>Contact Phone:</strong> <a href={"tel:" + partner.contact_phone}>{partner.contact_phone}</a>
+        <strong>Contact Phone:</strong>{" "}
+        <a className="link" href={"tel:" + partner.contact_phone}>
+          {partner.contact_phone}
+        </a>
       </p>
       <p>
         <strong>Created At:</strong> {partner.created_at ? formatDate(partner.created_at) : "N/A"}
