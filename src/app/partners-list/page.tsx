@@ -5,13 +5,21 @@ import { Partner, Type, parseDataAsPartner } from "@/types";
 import styles from "./styles.module.css";
 import { ContactCard } from "./ContactCard";
 import SearchBar from "./SearchBar";
+import TypeSelector from "./TypeSelector";
+
+interface SearchParams {
+  limit: number;
+  offset: number;
+  search: string;
+  type: string;
+}
 
 const Page: React.FC = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
   const offset = useRef<number>(0);
   const loadingPartners = useRef<boolean>(false);
 
-  const [searchParams, setSearchParams] = useState({});
+  const [searchParams, setSearchParams] = useState<Partial<SearchParams>>({});
 
   const loadMorePartners = async () => {
     loadingPartners.current = true;
@@ -59,7 +67,11 @@ const Page: React.FC = () => {
 
   return (
     <>
-      <h1>Partners List</h1> <SearchBar setSearchParams={setSearchParams} />
+      <h1>Partners List</h1>
+      <div className={styles["query-container"]}>
+        <SearchBar setSearchParams={setSearchParams} />
+        <TypeSelector setSearchParams={setSearchParams} />
+      </div>
       <div onScroll={handleScroll}>
         {partners.map((partner: Partner) => (
           <PartnerCard partner={partner} key={partner.partner_id} />

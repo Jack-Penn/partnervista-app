@@ -133,3 +133,17 @@ async function getPartnerTypes(partner: Partner): Promise<Type[]> {
     throw error;
   }
 }
+
+export const getAllTypes = async (): Promise<Type[]> => {
+  const sql = `
+    SELECT * FROM partnervista.types
+    ORDER BY name;
+  `;
+  try {
+    const result: Type[] = await query(sql);
+    return result;
+  } catch (error) {
+    console.error("Error adding new partner:", error);
+    throw error;
+  }
+};
