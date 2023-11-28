@@ -23,15 +23,28 @@ const Page: React.FC = () => {
 
   const [searchParams, setSearchParams] = useState<Partial<SearchParams>>({});
 
+  const selectedTypeCallback = (type: Type | null) => {
+    setSearchParams((prevParams) => {
+      if (type) {
+        return { ...prevParams, type: type.type_id };
+      } else {
+        const copy = { ...prevParams };
+        delete copy.type;
+        return copy;
+      }
+    });
+  };
+
   const loadMorePartners = async () => {
-    loadingPartners.current = true;
+    isLoadingPartners.current = true;
     const limit = 3;
     const url = objectToQueryUrl("/api/partners", Object.assign({ limit, offset: offset.current }, searchParams));
+    console.log(url);
     const res = await fetch(url);
     const newPartners = (await res.json()).map(parseDataAsPartner);
     setPartners((prevPartners) => [...prevPartners, ...newPartners]);
     offset.current += limit;
-    loadingPartners.current = false;
+    isLoadingPartners.current = false;
   };
 
   function objectToQueryUrl(baseUrl: string, obj: any) {
@@ -46,7 +59,7 @@ const Page: React.FC = () => {
     setPartners([]);
     offset.current = 0;
     // Initial load
-    if (!loadingPartners.current) {
+    if (!isLoadingPartners.current) {
       loadMorePartners();
     }
   }, [searchParams]);
@@ -55,10 +68,11 @@ const Page: React.FC = () => {
     const isScrolledToBottom =
       window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 25;
 
-    if (isScrolledToBottom && !loadingPartners.current) {
+    if (isScrolledToBottom && !isLoadingPartners.current) {
       loadMorePartners();
     }
   };
+  useEffect(handleScroll, []);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
