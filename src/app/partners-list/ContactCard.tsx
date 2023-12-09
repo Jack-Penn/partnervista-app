@@ -1,26 +1,16 @@
-"use client";
-
 import { Partner } from "@/types";
 
 interface ContactCardProps {
   partner: Partner;
 }
 export const ContactCard: React.FC<ContactCardProps> = ({ partner }) => {
-  const vCardContent = `
-    BEGIN:VCARD
-    VERSION:3.0
-    FN:${partner.name}
-    ORG:${partner.name}
-    EMAIL:${partner.contact_email}
-    TEL:${partner.contact_phone}
-    END:VCARD
-  `;
-  const blob = new Blob([vCardContent], { type: "text/vcard" });
-  const url = window.URL.createObjectURL(blob);
-  window.URL.revokeObjectURL(url);
-
   return (
-    <a className="link" href={url} download={`${partner.name}_contact.vcf`}>
+    <a
+      className="link"
+      target="_blank"
+      href={`/api/partners/contact-card/${partner.partner_id}`}
+      download={`${partner.name}_contact.vcf`}
+    >
       Download Contact Card
     </a>
   );
