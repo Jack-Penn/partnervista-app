@@ -1,5 +1,5 @@
 import { createConnection, Connection, OkPacket } from "mysql";
-import { NewPartner, Partner, Type, parseDataAsPartner, parseDataAsType } from "./types";
+import { Address, NewPartner, Partner, Type, parseDataAsPartner, parseDataAsType } from "./types";
 
 const connection: Connection = createConnection({
   host: process.env.DB_HOST,
@@ -31,19 +31,70 @@ export const query = (sql: string, arr: (string | number)[] = []): Promise<any> 
   });
 
 export const addNewPartner = async (partner: NewPartner): Promise<number> => {
-  const { name, type, resources, contact_name, contact_email, contact_phone } = partner;
+  const { name, description, website, typeIds, resources, contact_name, contact_email, contact_phone, address } =
+    partner;
 
   const sql = `
     INSERT INTO partners
-    (name, type, resources, contact_name, contact_email, contact_phone, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+    (name, description, website, resources, contact_name, contact_email, contact_phone, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
   `;
 
   try {
-    const result: OkPacket = await query(sql, [name, type, resources, contact_name, contact_email, contact_phone]);
+    const result: OkPacket = await query(sql, [
+      name,
+      description,
+      website,
+      resources,
+      contact_name,
+      contact_email,
+      contact_phone,
+    ]);
+    typeIds.forEach((typeId) => {
+      addPartnerType(result.insertId, typeId);
+    });
+    if (address) {
+    }
     return result.insertId;
   } catch (error) {
     console.error("Error adding new partner:", error);
+    throw error;
+  }
+};
+
+export const addPartnerType = async (partnerId: string | number, typeId: string | number) => {
+  const sql = `
+    INSERT INTO partner_types
+    (partner_id, type_id)
+    VALUES (?, ?)
+  `;
+
+  try {
+    const result: OkPacket = await query(sql, [partnerId, typeId]);
+  } catch (error) {
+    console.error("Error adding type to partner:", error);
+    throw error;
+  }
+};
+
+export const addPartnerAddress = async (partnerId: string | number, address: Address) => {
+  const {
+    street,
+    city,
+    state,
+    zip_code,
+    coordinates: { lat, lng },
+  } = address;
+  const sql = `
+    INSERT INTO partner_addresses
+    (partner_id, street, city, state, zip_code, POINT(?, ?))
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+
+  try {
+    const result: OkPacket = await query(sql, [partnerId, street, city, state, zip_code, lat, lng]);
+  } catch (error) {
+    console.error("Error adding type to partner:", error);
     throw error;
   }
 };
@@ -118,6 +169,16 @@ export const queryPartners = async (options: queryPartnersOptions): Promise<Part
   }
 };
 
+export const getParnterById = async (id: string | number) => {
+  try {
+    const [partner] = await query("SELECT * FROM partners WHERE partner_id = ?", [id]);
+    return parseDataAsPartner(partner);
+  } catch (error) {
+    console.error(`Error searching for partner ${id}:`, error);
+    throw error;
+  }
+};
+
 async function getPartnerTypes(partner: Partner): Promise<Type[]> {
   const sql = `
     SELECT t.*
@@ -141,6 +202,21 @@ export const getAllTypes = async (): Promise<Type[]> => {
   `;
   try {
     const result: Type[] = await query(sql);
+    return result;
+  } catch (error) {
+    console.error("Error adding new partner:", error);
+    throw error;
+  }
+};
+
+export const getLocation = async (partnerId: number | string): Promise<Address | null> => {
+  const sql = `
+    SELECT * FROM your_table_name
+    WHERE partner_id = ?;
+  `;
+  try {
+    const result: Address = await query(sql, [partnerId]);
+    console.log(result);
     return result;
   } catch (error) {
     console.error("Error adding new partner:", error);

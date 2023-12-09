@@ -10,6 +10,20 @@ export interface Partner {
   contact_phone: string;
   created_at: Date;
   updated_at: Date;
+  address?: Address;
+}
+
+export interface Address {
+  partner_id: number;
+  street: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  coordinates: Coordinates;
+}
+export interface Coordinates {
+  lat: number;
+  lng: number;
 }
 
 export function parseDataAsPartner(partner: Partner) {
@@ -31,9 +45,12 @@ export function parseDataAsType(type: Type) {
 
 export interface NewPartner {
   name: string;
-  type: string;
+  description: string;
+  website: string;
+  typeIds: (string | number)[];
   resources: string;
   contact_name: string;
   contact_email: string;
   contact_phone: string;
+  address?: Address;
 }
