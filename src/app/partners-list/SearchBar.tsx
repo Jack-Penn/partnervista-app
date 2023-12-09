@@ -1,44 +1,23 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState, useEffect, useRef } from "react";
 import styles from "./styles.module.scss";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
-interface SearchBarProps {
-  setSearchParams: Dispatch<SetStateAction<{}>>;
-}
+const SearchBar: React.FC = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
-const SearchBar: React.FC<SearchBarProps> = ({ setSearchParams }) => {
-  //   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const initialLoad = useRef<boolean>(true);
+  const handleSearch = (search: string) => {
+    const newParams = new URLSearchParams(searchParams);
 
-  useEffect(() => {
-    if (!initialLoad.current) {
-      handleSearch();
-    }
-  }, [searchQuery]);
-
-  const handleSearch = async () => {
-    if (searchQuery.trim() !== "") {
-      setSearchParams((prevParams) => ({ ...prevParams, search: searchQuery }));
+    if (search) {
+      newParams.set("search", search);
     } else {
-      setSearchParams((prevParams) => {
-        const copy: any = { ...prevParams };
-        if (copy.hasOwnProperty("search")) delete copy.search;
-        return copy;
-      });
+      newParams.delete("search");
     }
-  };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-    initialLoad.current = false;
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
+    router.push(`${pathname}?${newParams.toString()}`);
   };
 
   return (
@@ -46,10 +25,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ setSearchParams }) => {
       <input
         className={styles["search-bar"]}
         type="text"
+        name="search"
         placeholder="Search partners..."
-        value={searchQuery}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
+        autoComplete="off"
+        defaultValue={searchParams?.get("search") || ""}
+        onChange={(e) => handleSearch(e.target.value)}
       />
       <i className={`${styles["search-icon"]} text-lg`}>🔍</i>
     </div>

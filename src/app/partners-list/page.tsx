@@ -1,101 +1,44 @@
-"use client";
-
-import { useState, useEffect, useRef } from "react";
-import { Partner, Type, parseDataAsPartner } from "@/types";
+import { Partner, Type } from "@/types";
 import styles from "./styles.module.scss";
 import { ContactCard } from "./ContactCard";
 import SearchBar from "./SearchBar";
 import TypeChip from "./TypeChip";
 import TypeSelector from "./TypeSelector";
 import Image from "next/image";
+import { queryPartners } from "@/db";
 
-interface SearchParams {
-  limit: number;
-  offset: number;
-  search: string;
-  type: string;
-}
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const searchQuery = (searchParams.search || "") as string;
+  const typeQuery = (searchParams.type || "") as string;
 
-const Page: React.FC = () => {
-  const [partners, setPartners] = useState<Partner[]>([]);
-  const offset = useRef<number>(0);
-  const loadingPartners = useRef<boolean>(false);
-
-  const [searchParams, setSearchParams] = useState<Partial<SearchParams>>({});
-
-  const selectedTypeCallback = (type: Type | null) => {
-    setSearchParams((prevParams) => {
-      if (type) {
-        return { ...prevParams, type: type.type_id };
-      } else {
-        const copy = { ...prevParams };
-        delete copy.type;
-        return copy;
-      }
-    });
-  };
-
-  const loadMorePartners = async () => {
-    isLoadingPartners.current = true;
-    const limit = 3;
-    const url = objectToQueryUrl("/api/partners", Object.assign({ limit, offset: offset.current }, searchParams));
-    console.log(url);
-    const res = await fetch(url);
-    const newPartners = (await res.json()).map(parseDataAsPartner);
-    setPartners((prevPartners) => [...prevPartners, ...newPartners]);
-    offset.current += limit;
-    isLoadingPartners.current = false;
-  };
-
-  function objectToQueryUrl(baseUrl: string, obj: any) {
-    const queryString = Object.keys(obj)
-      .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}`)
-      .join("&");
-
-    return baseUrl + (queryString.length > 0 ? `?${queryString}` : "");
-  }
-
-  useEffect(() => {
-    setPartners([]);
-    offset.current = 0;
-    // Initial load
-    if (!isLoadingPartners.current) {
-      loadMorePartners();
-    }
-  }, [searchParams]);
-
-  const handleScroll = () => {
-    const isScrolledToBottom =
-      window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 25;
-
-    if (isScrolledToBottom && !isLoadingPartners.current) {
-      loadMorePartners();
-    }
-  };
-  useEffect(handleScroll, []);
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [partners]);
+  const partners = await queryPartners({
+    searchQuery,
+    typeId: typeQuery,
+    limit: 100,
+    offset: 0,
+  });
 
   return (
     <>
-      <div className={`${styles["query-container"]} m-2.5`}>
-        <SearchBar setSearchParams={setSearchParams} />
-        <TypeSelector setSearchParams={setSearchParams} />
+      <div className={`flex gap-10 m-2.5`}>
+        <SearchBar />
+        <div className="flex gap-4 items-center">
+          <span>Type Filter:</span>
+          <TypeSelector />
+        </div>
       </div>
-      <div onScroll={handleScroll}>
+      <div>
         {partners.map((partner: Partner) => (
           <PartnerCard partner={partner} key={partner.partner_id} />
         ))}
       </div>
     </>
   );
-};
-export default Page;
+}
 
 interface PartnerCardProps {
   partner: Partner;
