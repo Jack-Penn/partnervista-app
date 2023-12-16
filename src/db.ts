@@ -1,11 +1,11 @@
-import { createConnection, Connection, OkPacket } from "mysql";
+import { createConnection, Connection, OkPacket } from "mysql2";
 import { Address, NewPartner, Partner, Type, parseDataAsPartner, parseDataAsType } from "./types";
 
 const connection: Connection = createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
+  host: "Mysql",
+  user: "root",
+  database: "partnervista",
+  password: "password",
 });
 
 // Connect to the database

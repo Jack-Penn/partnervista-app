@@ -1,3 +1,5 @@
+# build with: docker-compose build
+
 # Use the official Node.js image as the base  
 FROM node:19  
 
@@ -8,7 +10,7 @@ WORKDIR /app
 COPY package*.json ./  
 
 # Install dependencies  
-RUN npm ci  
+RUN npm install
 
 # Copy the app source code to the container  
 COPY . .  
